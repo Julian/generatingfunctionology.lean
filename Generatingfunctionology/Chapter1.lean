@@ -1,4 +1,5 @@
 import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.Algebra.Group.Defs
 
 noncomputable section
 
@@ -33,6 +34,28 @@ lemma A_frac : X * (1 - X)⁻¹ * (1 - 2 * X)⁻¹ = X * (F₁ - F₂) := by
   apply cancel_left
   sorry
   -- todo: partial fraction expansion
+
+example {x y z : ℚ} (h : x ≠ 0) : x * y = x * z → y = z := by sorry
+
+set_option diagnostics true
+#synth IsLeftCancelMul ℚ
+
+lemma A_algebraic_easy {x : ℚ} : 1 = 2 * (1 - x) + (-1) * (1 - 2 * x) := by ring
+
+#print mul_left_cancel_iff
+
+lemma add_left {z y : ℚ} (x : ℚ) : y = z → x * y = x * z := by exact fun a ↦ congrArg (HMul.hMul x) a
+
+lemma A_algebraic {x : ℚ} (h₁ : x ≠ 1) (h₂ : x ≠ 1/2) : (1 - x)⁻¹ * (1 - 2 * x)⁻¹ = (2 * (1 - 2 * x)⁻¹ - 1 * (1 - x)⁻¹) := by
+  -- 1. multiply both sides by (1 - x)
+  let a : ℚ := (1 - x)
+  have : (1 - x) * (1 - x)⁻¹ * (1 - 2 * x)⁻¹ = (1 - x) * (2 * (1 - 2 * x)⁻¹ - 1 * (1 - x)⁻¹)
+    → (1 - x)⁻¹ * (1 - 2 * x)⁻¹ = (2 * (1 - 2 * x)⁻¹ - 1 * (1 - x)⁻¹) := by sorry
+  apply add_left a
+  rw [← mul_left_cancel_iff]
+  -- 2. multiply both sides by (1 - 2 * x)
+  -- exactly A_algebraic_easy
+  sorry
 
 
 lemma α_eq (n : ℕ) : α n = 2 ^ n - 1 := sorry
