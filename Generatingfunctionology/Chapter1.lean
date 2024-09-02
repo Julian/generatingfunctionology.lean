@@ -3,8 +3,6 @@ import Mathlib.RingTheory.PowerSeries.WellKnown
 
 noncomputable section
 
-open PowerSeries
-
 namespace PowerSeries
 
 variable {α : Type*} [Semiring α] (φ φ' : PowerSeries α)
@@ -20,13 +18,15 @@ abbrev constantCoeff' := constantCoeff α
 -/
 abbrev shift : PowerSeries α := mk fun n ↦ coeff' (n + 1) φ
 
+notation φ " /ₓ " => shift φ
+
 namespace shift
 
 /-
   If `p = a_0 + a_1 * X + a_2 * X^2 + ...`, then
   `p.shift * X + a_0 = p`
 -/
-lemma shift_mul_X_add : φ.shift * X + (C' (constantCoeff' φ)) = φ := by
+lemma shift_mul_X_add : φ/ₓ * X + (C' (constantCoeff' φ)) = φ := by
   ext n; cases n <;> simp
 
 variable {φ φ'}
@@ -36,13 +36,15 @@ variable {φ φ'}
   if `φ.shift = φ'`, then
   `φ = φ' * X + a_0`
 -/
-lemma shift_inv (h: φ.shift = φ') : φ = φ' * X + (C' (constantCoeff' φ)) := by
+lemma shift_inv (h: φ/ₓ = φ') : φ = φ' * X + (C' (constantCoeff' φ)) := by
   have := congrFun (congrArg HAdd.hAdd (congrFun (congrArg HMul.hMul h) X)) (C' (constantCoeff' φ))
   rwa [shift_mul_X_add] at this
 
 end shift
 
 end PowerSeries
+
+open PowerSeries
 
 abbrev α : ℕ → ℚ
 | n + 1 => 2 * (α n) + 1
@@ -111,7 +113,7 @@ end invOneScaled
 /-
   `A.shift = 2 * A + (1 - X)⁻¹`
 -/
-theorem left_eq_right : A.shift = 2 * A + invUnitsSub 1 := by
+theorem left_eq_right : A/ₓ = 2 * A + invUnitsSub 1 := by
   have : 2 * mk α = C' 2 * mk α := rfl
   ext n
   cases' n
