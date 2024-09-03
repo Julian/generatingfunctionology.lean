@@ -8,6 +8,7 @@ namespace PowerSeries
 variable {α : Type*} [Semiring α] (φ φ' : PowerSeries α)
 
 /- Same as normal but ring is implicit -/
+abbrev coeff' := coeff α
 abbrev C' := C α
 abbrev constantCoeff' := constantCoeff α
 
@@ -15,7 +16,7 @@ abbrev constantCoeff' := constantCoeff α
   Given `p = a_0 + a_1 * X + a_2 * X^2 + ...`,
   `p.shift = a_1 + a_2 * X + a_3 * X^2 + ...`
 -/
-abbrev shift : PowerSeries α := mk fun n ↦ coeff (n + 1) φ
+abbrev shift : PowerSeries α := mk fun n ↦ coeff' (n + 1) φ
 
 notation φ " /ₓ " => shift φ
 
