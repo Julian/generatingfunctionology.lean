@@ -140,6 +140,7 @@ universe u
 theorem invUnitSubOne_eq_invOneScaledOne {R : Type u} [Ring R] : (invUnitsSub 1 : R⟦X⟧) = invOneScaled 1 := by
   simp [invUnitsSub, invOneScaled, one_pow]
 
+/- Rewrite A using partial fraction decomposition -/
 theorem pfd_A : X * (2 * invOneScaled 2 - invUnitsSub 1) = (X : ℚ⟦X⟧) * (invUnitsSub 1) * invOneScaled 2 := by
   have : (2 * C' 1 : ℚ⟦X⟧) = C' 2 := by simp; rfl
   calc
@@ -157,6 +158,7 @@ theorem pfd_A : X * (2 * invOneScaled 2 - invUnitsSub 1) = (X : ℚ⟦X⟧) * (i
     _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invUnitsSub 1) := by rw [←invUnitSubOne_eq_invOneScaledOne]
     _  = (X : ℚ⟦X⟧) * (invUnitsSub 1) * invOneScaled 2 := by ring
 
+/- Find the coefficients of the partial fraction decomposition version of A -/
 theorem coeff_pfd : (X : ℚ⟦X⟧) * (2 * invOneScaled 2 - invUnitsSub 1) = mk fun n => 2^n - 1 := by
   ext n; cases' n with n <;> simp
   · simp [invOneScaled]
@@ -171,7 +173,6 @@ theorem coeff_alpha : α = fun n => 2^n - 1 := by
     ext n
     have := PowerSeries.ext_iff.mp h
     have := this n
-    simp at this
-    trivial
+    simpa
   apply this
   rw [←coeff_pfd, pfd_A, ←recurrence]
