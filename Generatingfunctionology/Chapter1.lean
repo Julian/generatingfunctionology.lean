@@ -76,13 +76,13 @@ notation a "/ ( " x " ) " => a * extractInvOneScaled x
   The constant coefficient of `(1 - a*X)⁻¹` is 1
 -/
 @[simp]
-theorem constCoeff_invOneScaled (a : R) : constantCoeff' (invOneScaled a) = 1 := by
+theorem constCoeff_invOneScaled (a : R) : constantCoeff' (1 / (1 - C' a * X)) = 1 := by
   simp [constantCoeff', invOneScaled]
 
 /-
   `(1 - a*X)⁻¹ * a*X = a*X + a^2*X^2 + a^3*X^3 + ...`
 -/
-theorem mul_invOneScaled_scale_shifts (a : R) : (invOneScaled a) * (C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
+theorem mul_invOneScaled_scale_shifts (a : R) : 1 / (1 - C' a * X) * (C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
   ext n
   cases' n
   <;> simp [← mul_assoc, pow_succ]
@@ -91,7 +91,7 @@ theorem mul_invOneScaled_scale_shifts (a : R) : (invOneScaled a) * (C' a * X) = 
   `a*X * (1 - a*X)⁻¹ = a*X + a^2*X^2 + a^3*X^3 + ...`
   (Need both sides since not assuming that `R` is a commutative ring)
 -/
-theorem mul_invOneScaled_scale_shifts' (a : R) : (C' a * X) * (invOneScaled a) = mk fun n => if n = 0 then 0 else a^n := by
+theorem mul_invOneScaled_scale_shifts' (a : R) : (C' a * X) * 1 / (1 - C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
   ext n
   cases' n
   <;> simp [mul_assoc, pow_succ, pow_mul_comm']
@@ -99,21 +99,21 @@ theorem mul_invOneScaled_scale_shifts' (a : R) : (C' a * X) * (invOneScaled a) =
 /-
   `(1 - a*X) * (1 - a*X)⁻¹ = 1`
 -/
-theorem invOneScaled_inv (a : R) : (1 - C' a * X) * invOneScaled a = 1 := by
+theorem invOneScaled_inv (a : R) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
   ext n
   cases' n
   · simp
-  · rw [sub_mul 1 (C' a * X) (invOneScaled a), mul_invOneScaled_scale_shifts']
+  · rw [sub_mul 1 (C' a * X) (1 * extractInvOneScaled (1- C' a * X)), mul_invOneScaled_scale_shifts']
     simp
 
 /-
   `(1 - a*X)⁻¹ * (1 - a*X) = 1`
 -/
-theorem invOneScaled_inv' (a : R) : (invOneScaled a) * (1 - C' a * X) = 1 := by
+theorem invOneScaled_inv' (a : R) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := by
   ext n
   cases' n with n
   · simp
-  · rw [mul_sub_left_distrib (invOneScaled a) 1 (C' a * X), mul_invOneScaled_scale_shifts]
+  · rw [mul_sub_left_distrib (1 * extractInvOneScaled (1 - C' a * X)) 1 (C' a * X), mul_invOneScaled_scale_shifts]
     simp
 
 end invOneScaled
@@ -137,7 +137,11 @@ theorem recurrence : A = X * 1 / (1 - X) * 1 / (1 - 2*X) := by
   have : A - X * 2 * A = X * invOneScaled 1 := sub_eq_of_eq_add' this
   rw [mul_comm (X * 2) A, ← mul_one A, mul_assoc, ← mul_assoc 1 X 2, ← mul_sub_left_distrib, one_mul] at this
   have : A * (1-X*2)*(invOneScaled 2) = X * invOneScaled 1 * (invOneScaled 2) := congrFun (congrArg HMul.hMul this) (invOneScaled 2)
-  have inverse_works : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = 1 := invOneScaled_inv 2
+  have inverse_works : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = 1 := by
+    have : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = (1 - 2*X)* 1 / (1 - 2 * X) := by
+      simp; left; rfl
+    rw [this]
+    exact invOneScaled_inv 2
   rw [mul_assoc, mul_comm X 2, inverse_works, mul_one] at this
   simpa [←mul_assoc]
 
@@ -153,22 +157,14 @@ theorem invUnitSubOne_eq_invOneScaledOne {R : Type u} [Ring R] : (invUnitsSub 1 
 theorem pfd_A : X * (2 / (1 - 2*X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * 1 / (1 - X) * 1 / (1 - 2*X) := by
   have : (2 * C' 1 : ℚ⟦X⟧) = C' 2 := by simp; rfl
   calc
-    X * (2 / (1 - 2*X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 - invUnitsSub 1) := by simp; left; rfl
-    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 - invOneScaled 1) := by simp
-    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * (1) - invOneScaled 1) := by ring
-    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * ((1 - C' 1 * X) * invOneScaled 1) - invOneScaled 1) := by
-      rw [invOneScaled_inv]
-    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * ((1 - C' 1 * X) * invOneScaled 1) - (1) * invOneScaled 1) := by ring
-    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * ((1 - C' 1 * X) * invOneScaled 1) - ((1 - C' 2*X)*(invOneScaled 2)) * invOneScaled 1) := by
-      simp [invOneScaled_inv]
-    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) * (2 * (1 - C' 1 * X) - (1 - C' 2*X)) := by ring
-    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) * (2 - 2 * C' 1 * X - 1 + C' 2 * X) := by ring
-    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) * (2 - C' 2 * X - 1 + C' 2 * X) := by rw [this]
-    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) := by ring
-    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invUnitsSub 1) := by rw [←invUnitSubOne_eq_invOneScaledOne]
-    _  = (X : ℚ⟦X⟧) * (invUnitsSub 1) * invOneScaled 2 := by ring
-    _  = (X : ℚ⟦X⟧) * 1 / (1 - X) * 1 / (1 - 2 * X) := by simp; left; rfl
-
+    (X : ℚ⟦X⟧) * (2 / (1 - 2*X) - 1 / (1 - X)) = X * (2 / (1 - C' 2*X) * ((1 - C' 1 * X) * 1 / (1 - C' 1 * X)) - ((1 - C' 2 * X) * 1 / (1 - C' 2 *X)) * 1 / (1 - C' 1* X)) := by
+      rw [invOneScaled_inv, invOneScaled_inv]
+      simp; left; rfl
+    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * (1 - C' 1 * X) - (1 - C' 2 * X)) := by ring
+    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * 1 - 2 * C' 1 * X - 1 + C' 2 * X) := by ring
+    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * 1 - C' 2 * X - 1 + C' 2 * X) := by rw [this]
+    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) := by ring
+    _ = X * 1 / (1 - X) * 1 / (1 - 2*X) := by simp; left; rfl
 
 /- Find the coefficients of the partial fraction decomposition version of A -/
 theorem coeff_pfd : (X * (2 / (1 - 2*X) - 1 / (1 - X)) : ℚ⟦X⟧) = mk fun n => 2^n - 1 := by
