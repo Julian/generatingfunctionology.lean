@@ -8,7 +8,6 @@ namespace PowerSeries
 variable {α : Type*} [Semiring α] (φ φ' : PowerSeries α)
 
 /- Same as normal but ring is implicit -/
-abbrev coeff' := coeff α
 abbrev C' := C α
 abbrev constantCoeff' := constantCoeff α
 
@@ -16,7 +15,7 @@ abbrev constantCoeff' := constantCoeff α
   Given `p = a_0 + a_1 * X + a_2 * X^2 + ...`,
   `p.shift = a_1 + a_2 * X + a_3 * X^2 + ...`
 -/
-abbrev shift : PowerSeries α := mk fun n ↦ coeff' (n + 1) φ
+abbrev shift : PowerSeries α := mk fun n ↦ coeff (n + 1) φ
 
 notation φ " /ₓ " => shift φ
 
@@ -132,3 +131,47 @@ theorem recurrence : A = X * (invUnitsSub 1) * invOneScaled 2 := by
   have inverse_works : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = 1 := invOneScaled_inv 2
   rw [mul_assoc, mul_comm X 2, inverse_works, mul_one] at this
   simpa [←mul_assoc]
+
+theorem invUnitsSub_eq_mkOne.{u} {R : Type u} [Ring R] : invUnitsSub 1 = (mk 1 : R⟦X⟧) := by
+  ext n; cases n <;> simp
+
+universe u
+@[simp]
+theorem invUnitSubOne_eq_invOneScaledOne {R : Type u} [Ring R] : (invUnitsSub 1 : R⟦X⟧) = invOneScaled 1 := by
+  simp [invUnitsSub, invOneScaled, one_pow]
+
+theorem pfd_A : X * (2 * invOneScaled 2 - invUnitsSub 1) = (X : ℚ⟦X⟧) * (invUnitsSub 1) * invOneScaled 2 := by
+  have : (2 * C' 1 : ℚ⟦X⟧) = C' 2 := by simp; rfl
+  calc
+    (X : ℚ⟦X⟧) * (2 * invOneScaled 2 - invUnitsSub 1) = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 - invOneScaled 1) := by simp
+    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * (1) - invOneScaled 1) := by ring
+    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * ((1 - C' 1 * X) * invOneScaled 1) - invOneScaled 1) := by
+      rw [invOneScaled_inv]
+    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * ((1 - C' 1 * X) * invOneScaled 1) - (1) * invOneScaled 1) := by ring
+    _  = (X : ℚ⟦X⟧) * (2 * invOneScaled 2 * ((1 - C' 1 * X) * invOneScaled 1) - ((1 - C' 2*X)*(invOneScaled 2)) * invOneScaled 1) := by
+      simp [invOneScaled_inv]
+    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) * (2 * (1 - C' 1 * X) - (1 - C' 2*X)) := by ring
+    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) * (2 - 2 * C' 1 * X - 1 + C' 2 * X) := by ring
+    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) * (2 - C' 2 * X - 1 + C' 2 * X) := by rw [this]
+    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invOneScaled 1) := by ring
+    _  = (X : ℚ⟦X⟧) * (invOneScaled 2) * (invUnitsSub 1) := by rw [←invUnitSubOne_eq_invOneScaledOne]
+    _  = (X : ℚ⟦X⟧) * (invUnitsSub 1) * invOneScaled 2 := by ring
+
+theorem coeff_pfd : (X : ℚ⟦X⟧) * (2 * invOneScaled 2 - invUnitsSub 1) = mk fun n => 2^n - 1 := by
+  ext n; cases' n with n <;> simp
+  · simp [invOneScaled]
+    have : (2 : ℚ⟦X⟧) = C' 2 := by rfl
+    rw [this]
+    rw [coeff_C_mul]
+    simp [pow_succ, pow_mul_comm']
+
+theorem coeff_alpha : α = fun n => 2^n - 1 := by
+  have : mk α = (mk fun n => 2^n - 1) → α = (fun n => 2^n - 1) := by
+    intro h
+    ext n
+    have := PowerSeries.ext_iff.mp h
+    have := this n
+    simp at this
+    trivial
+  apply this
+  rw [←coeff_pfd, pfd_A, ←recurrence]
