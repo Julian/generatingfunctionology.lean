@@ -118,6 +118,14 @@ theorem invOneScaled_inv' (a : R) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := b
 
 end invOneScaled
 
+theorem invUnitsSub_eq_mkOne.{u} {R : Type u} [Ring R] : invUnitsSub 1 = (mk 1 : R⟦X⟧) := by
+  ext n; cases n <;> simp
+
+universe u
+@[simp]
+theorem invUnitSubOne_eq_invOneScaledOne {R : Type u} [Ring R] : (invUnitsSub 1 : R⟦X⟧) = invOneScaled 1 := by
+  simp [invUnitsSub, invOneScaled, one_pow]
+
 /-
   `A.shift = 2 * A + (1 - X)⁻¹`
 -/
@@ -144,14 +152,6 @@ theorem recurrence : A = X * 1 / (1 - X) * 1 / (1 - 2*X) := by
     exact invOneScaled_inv 2
   rw [mul_assoc, mul_comm X 2, inverse_works, mul_one] at this
   simpa [←mul_assoc]
-
-theorem invUnitsSub_eq_mkOne.{u} {R : Type u} [Ring R] : invUnitsSub 1 = (mk 1 : R⟦X⟧) := by
-  ext n; cases n <;> simp
-
-universe u
-@[simp]
-theorem invUnitSubOne_eq_invOneScaledOne {R : Type u} [Ring R] : (invUnitsSub 1 : R⟦X⟧) = invOneScaled 1 := by
-  simp [invUnitsSub, invOneScaled, one_pow]
 
 /- Rewrite A using partial fraction decomposition -/
 theorem pfd_A : X * (2 / (1 - 2*X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * 1 / (1 - X) * 1 / (1 - 2*X) := by
