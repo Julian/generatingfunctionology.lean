@@ -2,6 +2,8 @@ import Generatingfunctionology.Basic
 
 open PowerSeries
 
+namespace «1.2»
+
 abbrev α : ℕ → ℚ
 | n + 1 => 2 * (α n) + 1
 | 0 => 0
@@ -42,3 +44,28 @@ theorem A.pfd_eq : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = mk (2 
   ext n; cases n <;> simp [pow_succ, pow_mul_comm', two_eq_C]
 
 theorem coeff_alpha : α = (2 ^ · - 1) := ext_mk <| A.pfd_eq ▸ A.pfd ▸ A_eq
+
+end «1.2»
+
+namespace «1.3»
+
+abbrev α : ℕ → ℚ
+| n + 1 => 2 * (α n) + n
+| 0 => 1
+
+-- A(x)
+abbrev A : ℚ⟦X⟧ := mk α
+
+/-
+  `(A - 1)/ₓ = 2 * A + X * d⁄dX (1 - X)⁻¹`
+-/
+theorem left_eq_right : (A - 1)/ₓ = 2 * A + X * (1 / (1 - X)) ^ 2 := by
+  ext n
+  cases n
+  · simp
+    rfl
+  · have foo' := invOneScaled_deriv (R := ℚ)
+    rw [one_mul] at foo'
+    simp [foo']
+
+end «1.3»
