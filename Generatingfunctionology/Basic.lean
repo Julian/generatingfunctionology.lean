@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.RingTheory.PowerSeries.Derivative
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
 noncomputable section
@@ -61,6 +61,8 @@ abbrev invOneScaled (a : α) : PowerSeries α := mk (a ^ ·)
 abbrev extractInvOneScaled (x : α⟦X⟧) : α⟦X⟧ := invOneScaled <| -(coeff' 1 x)
 notation a "/ ( " x " ) " => a * extractInvOneScaled x
 
+lemma extractInvOne : (1 / (1 - X) : α⟦X⟧) = invOneScaled 1 := by simp [extractInvOneScaled]
+
 section mkOneSpellings
 
 lemma eq_mkOne : invOneScaled 1 = (mk 1 : α⟦X⟧) := by ext n; simp
@@ -107,6 +109,39 @@ theorem invOneScaled_inv_right (a : α) : 1 / (1 - C' a * X) * (1 - C' a * X) = 
   · simp
   · rw [mul_sub_left_distrib, mul_invOneScaled_scale_shifts]
     simp
+
+section derivative
+
+variable {R: Type*} [CommRing R]
+
+lemma derivative_mk (f : R⟦X⟧) : d⁄dX R f = mk fun n ↦ coeff R (n + 1) f * (n + 1) := rfl
+
+example {n : ℕ} (a : ℕ → R) : coeff R (n + 1) ((X : R⟦X⟧) * mk a) = coeff R n (mk a) := coeff_succ_X_mul _ _
+example {a b c : ℚ} : a * b - a * c = a * (b - c) := (mul_sub_left_distrib _ _ _).symm
+
+-- GENERALIZEME: nth deriv
+lemma invOneScaled_deriv : d⁄dX R (1 / (1 - X)) = (1 / (1 - X)) ^ 2 :=
+  have := calc d⁄dX R (1 / (1 - X))
+      = (mk (· + 1) : R⟦X⟧) := by simp [derivative_mk]
+    _ = (mk (·) : R⟦X⟧) + (mk 1) := by ext; simp
+    _ = (X : R⟦X⟧) * d⁄dX R (1 / (1 - X)) + (mk 1) := by ext n; cases n <;> simp [coeff_succ_X_mul, derivative_mk]
+
+  by
+    have : (d⁄dX R (1 / (1 - X))) - X * d⁄dX R (1 / (1 - X)) = 1 / (1 - X) := by
+      rw [extractInvOne, eq_mkOne] at this ⊢
+      exact (eq_sub_of_add_eq' this.symm).symm
+    have h : (d⁄dX R (1 / (1 - X))) * (1 - X) = (1 / (1 - X)) := by
+      have foo : (d⁄dX R) (1 * extractInvOneScaled (1 - X)) - X * (d⁄dX R) (1 * extractInvOneScaled (1 - X)) = 1 * (d⁄dX R) (1 * extractInvOneScaled (1 - X)) - X * (d⁄dX R) (1 * extractInvOneScaled (1 - X)) := by ring
+      rwa [foo, ←mul_sub_right_distrib, mul_comm] at this
+    have h' : d⁄dX R (1 / (1 - X)) * (1 - X) * 1 / (1 - X) = (1 / (1 - X)) * 1 / (1 - X) := congr($h * (1 / (1 - X)))
+    have h'' : (1 / (1 - X) : R⟦X⟧) * 1 / (1 - X) = (1 / (1 - X)) ^ 2 := by rw [extractInvOne, eq_mkOne, pow_two]
+    have h''' : (1 - X : R⟦X⟧) * (1 * extractInvOneScaled (1 - X)) = 1 := by
+      have bla := invOneScaled_inv (1 : R)
+      have bla' : C' 1 * X = (1 : R⟦X⟧) * X := rfl
+      rwa [bla', one_mul] at bla
+    rwa [h'', mul_assoc, h''', mul_one] at h'
+end derivative
+
 
 end invOneScaled
 

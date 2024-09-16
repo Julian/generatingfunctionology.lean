@@ -2,6 +2,8 @@ import Generatingfunctionology.Basic
 
 open PowerSeries
 
+namespace «1.2»
+
 abbrev α : ℕ → ℚ
 | n + 1 => 2 * (α n) + 1
 | 0 => 0
@@ -42,3 +44,52 @@ theorem A.pfd_eq : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = mk (2 
   ext n; cases n <;> simp [pow_succ, pow_mul_comm', two_eq_C]
 
 theorem coeff_alpha : α = (2 ^ · - 1) := ext_mk <| A.pfd_eq ▸ A.pfd ▸ A_eq
+
+end «1.2»
+
+namespace «1.3»
+
+abbrev α : ℕ → ℚ
+| n + 1 => 2 * (α n) + n
+| 0 => 1
+
+/-- A(x) -/
+abbrev A : ℚ⟦X⟧ := mk α
+
+/--
+  `(A - 1)/ₓ = 2 * A + X * d⁄dX (1 - X)⁻¹`
+-/
+theorem left_eq_right : (A - 1)/ₓ = 2 * A + X * (1 / (1 - X)) ^ 2 := by
+  ext n
+  cases n
+  · simp only [coeff_mk, zero_add, map_sub, α, mul_one, CharP.cast_eq_zero, add_zero, coeff_one,
+               one_ne_zero, ↓reduceIte, sub_zero, one_mul, map_add, coeff_zero_eq_constantCoeff,
+               map_mul, constantCoeff_mk, constantCoeff_X, map_pow, coeff_one_X, zero_sub, neg_neg,
+               pow_zero, one_pow]
+    rfl
+  · have foo' := invOneScaled_deriv (R := ℚ)
+    have eq : (A - 1)/ₓ = (A - C' (constantCoeff' A))/ₓ := rfl
+    rw [←foo']
+    sorry
+
+theorem A_eq : A = (1 - 2 • X + 2 • X ^ 2 : ℚ⟦X⟧) * (1 / (1 - X) ^ 2) * (1 / (1 - 2 • X)) := by
+  have : (A - C' (constantCoeff' A)) /ₓ = 2 * A + X * (1 * extractInvOneScaled (1 - X)) ^ 2 := left_eq_right
+  rw [sub_eq_iff_eq_add.mp <| shift_inv this, extractInvOne, one_mul]
+  sorry
+
+
+
+theorem A.pfd :
+  (1 - 2 • X + 2 • X ^ 2 : ℚ⟦X⟧) * (1 / (1 - X) ^ 2) * (1 / (1 - 2 • X)) =
+  ((-1) / (1 - X) ^ 2 : ℚ⟦X⟧) + (2  / (1 - 2 • X) : ℚ⟦X⟧) :=
+  sorry
+
+/-- Find the coefficients of the partial fraction decomposition version of A -/
+theorem A.pfd_eq :
+  ((-1) / (1 - X) ^ 2 : ℚ⟦X⟧) + (2  / (1 - 2 • X) : ℚ⟦X⟧) =
+    mk (fun n ↦ 2 ^ (n + 1) - n - 1 : ℕ → ℚ) := by
+  ext n; cases n <;> sorry
+
+theorem coeff_alpha : α = (fun n ↦ 2 ^ (n + 1) - n - 1 : ℕ → ℚ) := ext_mk <| A.pfd_eq ▸ A.pfd ▸ A_eq
+
+end «1.3»
