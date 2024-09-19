@@ -102,7 +102,7 @@ theorem invOneScaled_inv (a : R) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
   ext n
   cases' n
   · simp
-  · rw [sub_mul 1 (C' a * X) (1 * extractInvOneScaled (1- C' a * X)), mul_invOneScaled_scale_shifts']
+  · rw [sub_mul 1 (C' a * X) (1 / (1 - C' a * X)), mul_invOneScaled_scale_shifts']
     simp
 
 /-
@@ -112,7 +112,7 @@ theorem invOneScaled_inv' (a : R) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := b
   ext n
   cases' n with n
   · simp
-  · rw [mul_sub_left_distrib (1 * extractInvOneScaled (1 - C' a * X)) 1 (C' a * X), mul_invOneScaled_scale_shifts]
+  · rw [mul_sub_left_distrib (1 / (1 - C' a * X)) 1 (C' a * X), mul_invOneScaled_scale_shifts]
     simp
 
 end invOneScaled
