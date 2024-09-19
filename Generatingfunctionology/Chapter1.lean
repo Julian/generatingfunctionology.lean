@@ -25,7 +25,7 @@ theorem recurrence : A = X * 1 / (1 - X) * 1 / (1 - 2*X) := by
   have := shift.shift_inv left_eq_right
   simp [constantCoeff_mk, map_zero, add_zero] at this
   rw [← mul_comm X (2 * A + invOneScaled 1), left_distrib X (2*A) (invOneScaled 1), ←mul_assoc] at this
-  have : A - X * 2 * A = X * invOneScaled 1 := sub_eq_of_eq_add' this
+  have : A - X * 2 * A = X * invOneScaled 1 := sub_eq_of_eq_add' this.symm
   rw [mul_comm (X * 2) A, ← mul_one A, mul_assoc, ← mul_assoc 1 X 2, ← mul_sub_left_distrib, one_mul] at this
   have : A * (1-X*2)*(invOneScaled 2) = X * invOneScaled 1 * (invOneScaled 2) := congrFun (congrArg HMul.hMul this) (invOneScaled 2)
   have inverse_works : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = 1 := by
