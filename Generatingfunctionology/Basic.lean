@@ -36,9 +36,7 @@ variable {φ φ'}
   if `φ.shift = φ'`, then
   `φ = φ' * X + a_0`
 -/
-lemma shift_inv (h: φ/ₓ = φ') : φ = φ' * X + (C' (constantCoeff' φ)) := by
-  have := congrFun (congrArg HAdd.hAdd (congrFun (congrArg HMul.hMul h) X)) (C' (constantCoeff' φ))
-  rwa [shift_mul_X_add] at this
+lemma shift_inv (h: φ/ₓ = φ') : φ' * X + (C' (constantCoeff' φ)) = φ := by rw [←h, shift_mul_X_add]
 
 end shift
 
@@ -68,8 +66,7 @@ notation a "/ ( " x " ) " => a * extractInvOneScaled x
   The constant coefficient of `(1 - a*X)⁻¹` is 1
 -/
 @[simp]
-theorem constCoeff_invOneScaled (a : R) : constantCoeff' (1 / (1 - C' a * X)) = 1 := by
-  simp [constantCoeff', invOneScaled]
+theorem constCoeff_invOneScaled (a : R) : constantCoeff' (1 / (1 - C' a * X)) = 1 := by simp
 
 /-
   `(1 - a*X)⁻¹ * a*X = a*X + a^2*X^2 + a^3*X^3 + ...`
