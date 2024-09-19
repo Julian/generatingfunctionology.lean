@@ -62,13 +62,12 @@ variable {R : Type u} [Ring R]
   The power series for `(1 - a*X)⁻¹`.
   (It's equal to `1 + a * X + a^2 * X^2 + ...`)
 -/
-abbrev invOneScaled (a : R) : PowerSeries R := mk fun n => a^n
+abbrev invOneScaled (a : R) : PowerSeries R := mk (a ^ ·)
 
-abbrev extractInvOneScaled (x : R⟦X⟧) : R⟦X⟧ := invOneScaled $ -(coeff' 1 x)
+abbrev extractInvOneScaled (x : R⟦X⟧) : R⟦X⟧ := invOneScaled <| -(coeff' 1 x)
 
 @[simp]
-lemma extractInv_unfold (x : R⟦X⟧) : extractInvOneScaled x = invOneScaled (-(coeff' 1 x)) := by
-  simp
+lemma extractInv_def (x : R⟦X⟧) : extractInvOneScaled x = invOneScaled (-(coeff' 1 x)) := rfl
 
 notation a "/ ( " x " ) " => a * extractInvOneScaled x
 
