@@ -1,4 +1,4 @@
-import Generatingfunctionology.Basic
+import GeneratingFunctionology.Basic
 
 open PowerSeries
 
