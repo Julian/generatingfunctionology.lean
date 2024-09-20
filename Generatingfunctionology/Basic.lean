@@ -108,6 +108,9 @@ theorem invOneScaled_inv' (a : R) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := b
   · rw [mul_sub_left_distrib (1 / (1 - C' a * X)) 1 (C' a * X), mul_invOneScaled_scale_shifts]
     simp
 
+lemma invOneScaled_cast_inv (n : ℕ) : (1 - n.cast * X : R⟦X⟧) * invOneScaled n.cast = 1 := by
+  sorry
+
 end invOneScaled
 
 theorem invUnitsSub_eq_mkOne.{u} {R : Type u} [Ring R] : invUnitsSub 1 = (mk 1 : R⟦X⟧) := by
