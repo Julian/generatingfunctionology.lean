@@ -7,6 +7,9 @@ namespace PowerSeries
 
 variable {α : Type*} [Semiring α] (φ φ' : PowerSeries α)
 
+@[simp]
+lemma two_eq_C {R : Type*} [Semiring R] {φ : R⟦X⟧} : 2 * φ = C R 2 * φ := rfl
+
 /- Same as normal but ring is implicit -/
 abbrev coeff' := coeff α
 abbrev C' := C α

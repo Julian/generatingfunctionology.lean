@@ -12,58 +12,41 @@ abbrev A : ℚ⟦X⟧ := mk α
 /-
   `A.shift = 2 * A + (1 - X)⁻¹`
 -/
-theorem left_eq_right : A/ₓ = 2 * A + 1 / (1 - X) := by
-  have : 2 * mk α = C' 2 * mk α := rfl
-  ext n
-  cases' n
-  <;> simp [this]
+theorem left_eq_right : A/ₓ = 2 * A + 1 / (1 - X) := by ext n; cases' n <;> simp
 
 /-
   `A = X * (1 - X)⁻¹ * (1 - 2 * X)⁻¹`
 -/
-theorem recurrence : A = X * 1 / (1 - X) * 1 / (1 - 2*X) := by
+theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2*X) := by
   have := shift.shift_inv left_eq_right
-  simp [constantCoeff_mk, map_zero, add_zero] at this
-  rw [← mul_comm X (2 * A + invOneScaled 1), left_distrib X (2*A) (invOneScaled 1), ←mul_assoc] at this
+  simp [constantCoeff_mk, map_zero, add_zero, -two_eq_C] at this
+  rw [← mul_comm, left_distrib, ←mul_assoc] at this
   have : A - X * 2 * A = X * invOneScaled 1 := sub_eq_of_eq_add' this.symm
-  rw [mul_comm (X * 2) A, ← mul_one A, mul_assoc, ← mul_assoc 1 X 2, ← mul_sub_left_distrib, one_mul] at this
+  rw [mul_comm, ← mul_one A, mul_assoc, ← mul_assoc 1, ← mul_sub_left_distrib, one_mul] at this
   have : A * (1-X*2)*(invOneScaled 2) = X * invOneScaled 1 * (invOneScaled 2) := congrFun (congrArg HMul.hMul this) (invOneScaled 2)
-  have inverse_works : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = 1 := by
-    have : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = (1 - 2*X)* 1 / (1 - 2 * X) := by
-      simp; left; rfl
+  have inverse_works : (1 - 2*X : ℚ⟦X⟧) * (invOneScaled 2) = 1 := by
+    have : (1-2*X : ℚ⟦X⟧)*(invOneScaled 2) = (1 - 2*X) * 1 / (1 - 2 * X) := by simp
     rw [this]
     exact invOneScaled_inv 2
   rw [mul_assoc, mul_comm X 2, inverse_works, mul_one] at this
-  simpa [←mul_assoc]
+  simpa
 
 /- Rewrite A using partial fraction decomposition -/
-theorem pfd_A : X * (2 / (1 - 2*X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * 1 / (1 - X) * 1 / (1 - 2*X) := by
-  have : (2 * C' 1 : ℚ⟦X⟧) = C' 2 := by simp; rfl
+theorem A.pfd : X * (2 / (1 - 2*X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * 1 / (1 - X) * 1 / (1 - 2*X) := by
   calc
     (X : ℚ⟦X⟧) * (2 / (1 - 2*X) - 1 / (1 - X)) = X * (2 / (1 - C' 2*X) * ((1 - C' 1 * X) * 1 / (1 - C' 1 * X)) - ((1 - C' 2 * X) * 1 / (1 - C' 2 *X)) * 1 / (1 - C' 1* X)) := by
       rw [invOneScaled_inv, invOneScaled_inv]
-      simp; left; rfl
-    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * (1 - C' 1 * X) - (1 - C' 2 * X)) := by ring
+      simp
     _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * 1 - 2 * C' 1 * X - 1 + C' 2 * X) := by ring
-    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * 1 - C' 2 * X - 1 + C' 2 * X) := by rw [this]
-    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) := by ring
-    _ = X * 1 / (1 - X) * 1 / (1 - 2*X) := by simp; left; rfl
+    _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) := by simp; ring
+    _ = X * 1 / (1 - X) * 1 / (1 - 2*X) := by simp
 
 /- Find the coefficients of the partial fraction decomposition version of A -/
-theorem coeff_pfd : (X * (2 / (1 - 2*X) - 1 / (1 - X)) : ℚ⟦X⟧) = mk fun n => 2^n - 1 := by
-  ext n; cases' n with n <;> simp
-  · simp [invOneScaled]
-    have : (2 : ℚ⟦X⟧) = C' 2 := by rfl
-    rw [this]
-    rw [coeff_C_mul]
-    simp [pow_succ, pow_mul_comm']
+theorem A.pfd_eq : (X * (2 / (1 - 2*X) - 1 / (1 - X)) : ℚ⟦X⟧) = mk fun n => 2^n - 1 := by
+  ext n; cases' n with n <;> simp [pow_succ, pow_mul_comm']
 
-theorem coeff_alpha : α = fun n => 2^n - 1 := by
-  have : mk α = (mk fun n => 2^n - 1) → α = (fun n => 2^n - 1) := by
-    intro h
+theorem coeff_alpha : α = fun n => 2^n - 1 := 
+  suffices A = (mk fun n => 2^n - 1) by
     ext n
-    have := PowerSeries.ext_iff.mp h
-    have := this n
-    simpa
-  apply this
-  rw [←coeff_pfd, pfd_A, ←recurrence]
+    simpa using PowerSeries.ext_iff.mp this n
+  by rw [←A.pfd_eq, A.pfd, ←A_eq]
