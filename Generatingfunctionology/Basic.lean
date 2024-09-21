@@ -99,17 +99,27 @@ theorem invOneScaled_inv (a : R) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
     simp
 
 /-
+  `(1 - a*X) * (1 - a*X)⁻¹ = 1`
+-/
+theorem invOneScaled_inv_left (a : R) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
+  ext n
+  cases' n with n
+  · simp
+  · rw [mul_sub_right_distrib 1 (C' a * X) (1 / (1 - C' a * X)), mul_invOneScaled_scale_shifts']
+    simp
+
+/-
   `(1 - a*X)⁻¹ * (1 - a*X) = 1`
 -/
-theorem invOneScaled_inv' (a : R) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := by
+theorem invOneScaled_inv_right (a : R) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := by
   ext n
   cases' n with n
   · simp
   · rw [mul_sub_left_distrib (1 / (1 - C' a * X)) 1 (C' a * X), mul_invOneScaled_scale_shifts]
     simp
 
-lemma invOneScaled_cast_inv (n : ℕ) : (1 - n.cast * X : R⟦X⟧) * invOneScaled n.cast = 1 := by
-  sorry
+lemma invOneScaled_cast_inv (n : ℕ) : (1 - n.cast * X : R⟦X⟧) * 1 / (1 - n.cast * X) = 1 := by
+  simpa using invOneScaled_inv_left (n.cast : R)
 
 end invOneScaled
 
