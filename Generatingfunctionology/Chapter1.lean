@@ -24,7 +24,7 @@ theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2*X) :=
     _ = X * C' 2 * A + X * invOneScaled 1 := by ring
   by
     rw [mul_comm, ← mul_one A, mul_assoc, ← mul_assoc 1, ← mul_sub_left_distrib, one_mul] at this
-    have inverse_works : (1 - C' 2*X : ℚ⟦X⟧) * invOneScaled 2 = 1 := by simpa using invOneScaled_cast_inv 2 (R := ℚ)
+    have inverse_works : (1 - C' 2*X : ℚ⟦X⟧) * invOneScaled 2 = 1 := by simpa using invOneScaled_cast_inv 2 (α := ℚ)
     have := congrFun (congrArg HMul.hMul this) (invOneScaled 2)
     simpa [mul_assoc, mul_comm X, inverse_works]
 
