@@ -10,3 +10,4 @@ require "leanprover-community" / "mathlib"
 
 @[default_target]
 lean_lib Generatingfunctionology where
+  globs := #[.submodules `Generatingfunctionology]
