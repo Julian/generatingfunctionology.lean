@@ -46,6 +46,7 @@ end PowerSeries
 
 open PowerSeries
 
+-- GENERALIZEME: Can this be Semiring?
 variable [Ring α]
 
 section invOneScaled
@@ -58,10 +59,21 @@ abbrev invOneScaled (a : α) : PowerSeries α := mk (a ^ ·)
 
 abbrev extractInvOneScaled (x : α⟦X⟧) : α⟦X⟧ := invOneScaled <| -(coeff' 1 x)
 
+notation a "/ ( " x " ) " => a * extractInvOneScaled x
+
 @[simp]
 lemma extractInv_def (x : α⟦X⟧) : extractInvOneScaled x = invOneScaled (-(coeff' 1 x)) := rfl
 
-notation a "/ ( " x " ) " => a * extractInvOneScaled x
+lemma extractInvOne : (1 / (1 - X) : α⟦X⟧) = invOneScaled 1 := by simp
+
+section mkOneSpellings
+
+lemma eq_mkOne : invOneScaled 1 = (mk 1 : α⟦X⟧) := by ext n; simp
+
+lemma eq_invUnitsSubOne : invOneScaled 1 = (invUnitsSub 1 : α⟦X⟧) := by
+  simp [invUnitsSub, invOneScaled, one_pow]
+
+end mkOneSpellings
 
 /-
   The constant coefficient of `(1 - a*X)⁻¹` is 1
@@ -131,14 +143,3 @@ lemma invOneScaled_cast_inv (n : ℕ) : (1 - n.cast * X : α⟦X⟧) * 1 / (1 - 
   simpa using invOneScaled_inv_left (n.cast : α)
 
 end natCast
-
-section invUnitsSub
-
-theorem invUnitsSub_eq_mkOne.{u} {R : Type u} [Ring R] : invUnitsSub 1 = (mk 1 : R⟦X⟧) := by
-  ext n; cases n <;> simp
-
-@[simp]
-theorem invUnitSubOne_eq_invOneScaledOne : (invUnitsSub 1 : α⟦X⟧) = invOneScaled 1 := by
-  simp [invUnitsSub, invOneScaled, one_pow]
-
-end invUnitsSub
