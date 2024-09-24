@@ -22,8 +22,6 @@ abbrev shift : PowerSeries α := mk fun n ↦ coeff' (n + 1) φ
 
 notation φ " /ₓ " => shift φ
 
-namespace shift
-
 /-
   If `p = a_0 + a_1 * X + a_2 * X^2 + ...`, then
   `p.shift * X + a_0 = p`
@@ -39,8 +37,6 @@ variable {φ φ'}
   `φ = φ' * X + a_0`
 -/
 lemma shift_inv (h: φ/ₓ = φ') : φ' * X + (C' (constantCoeff' φ)) = φ := by rw [←h, shift_mul_X_add]
-
-end shift
 
 end PowerSeries
 
