@@ -41,4 +41,4 @@ theorem A.pfd : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = X * 1 / (
 theorem A.pfd_eq : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = mk (2 ^ · - 1) := by
   ext n; cases n <;> simp [pow_succ, pow_mul_comm', two_eq_C]
 
-theorem coeff_alpha : α = (2 ^ · - 1) := ext_mk <| by rw [←A.pfd_eq, A.pfd, ←A_eq]
+theorem coeff_alpha : α = (2 ^ · - 1) := ext_mk <| A.pfd_eq ▸ A.pfd ▸ A_eq
