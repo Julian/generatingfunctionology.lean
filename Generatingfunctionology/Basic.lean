@@ -85,27 +85,23 @@ theorem constCoeff_invOneScaled (a : α) : constantCoeff' (1 / (1 - C' a * X)) =
   `(1 - a*X)⁻¹ * a*X = a*X + a^2*X^2 + a^3*X^3 + ...`
 -/
 theorem mul_invOneScaled_scale_shifts (a : α) : 1 / (1 - C' a * X) * (C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
-  ext n
-  cases' n
-  <;> simp [← mul_assoc, pow_succ]
+  ext n; cases n <;> simp [← mul_assoc, pow_succ]
 
 /-
   `a*X * (1 - a*X)⁻¹ = a*X + a^2*X^2 + a^3*X^3 + ...`
   (Need both sides since not assuming that `R` is a commutative ring)
 -/
 theorem mul_invOneScaled_scale_shifts' (a : α) : (C' a * X) * 1 / (1 - C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
-  ext n
-  cases' n
-  <;> simp [mul_assoc, pow_succ, pow_mul_comm']
+  ext n; cases n <;> simp [mul_assoc, pow_succ, pow_mul_comm']
 
 /-
   `(1 - a*X) * (1 - a*X)⁻¹ = 1`
 -/
 theorem invOneScaled_inv (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
   ext n
-  cases' n
+  cases n
   · simp
-  · rw [sub_mul 1 (C' a * X) (1 / (1 - C' a * X)), mul_invOneScaled_scale_shifts']
+  · rw [sub_mul, mul_invOneScaled_scale_shifts']
     simp
 
 /-
@@ -113,9 +109,9 @@ theorem invOneScaled_inv (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := b
 -/
 theorem invOneScaled_inv_left (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
   ext n
-  cases' n with n
+  cases n
   · simp
-  · rw [mul_sub_right_distrib 1 (C' a * X) (1 / (1 - C' a * X)), mul_invOneScaled_scale_shifts']
+  · rw [mul_sub_right_distrib, mul_invOneScaled_scale_shifts']
     simp
 
 /-
@@ -123,23 +119,24 @@ theorem invOneScaled_inv_left (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1
 -/
 theorem invOneScaled_inv_right (a : α) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := by
   ext n
-  cases' n with n
+  cases n
   · simp
-  · rw [mul_sub_left_distrib (1 / (1 - C' a * X)) 1 (C' a * X), mul_invOneScaled_scale_shifts]
+  · rw [mul_sub_left_distrib, mul_invOneScaled_scale_shifts]
     simp
 
 end invOneScaled
 
 section natCast
 
+variable {φ}
+
 @[simp]
-lemma natCast_eq_C {n : ℕ} : n.cast * φ = C α n.cast * φ := rfl
+lemma natCast_eq_C {n : ℕ} : n • φ = C α n.cast * φ := by simp
 
 -- FIXME: Just the above being `simp` doesn't seem to work :/
-@[simp]
 lemma two_eq_C : 2 * φ = C α 2 * φ := rfl
 
-lemma invOneScaled_cast_inv (n : ℕ) : (1 - n.cast * X : α⟦X⟧) * 1 / (1 - n.cast * X) = 1 := by
-  simpa using invOneScaled_inv_left (n.cast : α)
+lemma invOneScaled_cast_inv (n : ℕ) : (1 - n • X : α⟦X⟧) * 1 / (1 - n • X) = 1 := by
+  simpa using invOneScaled_inv_left (n : α)
 
 end natCast
