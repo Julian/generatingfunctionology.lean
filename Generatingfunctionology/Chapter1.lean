@@ -10,7 +10,7 @@ abbrev α : ℕ → ℚ
 abbrev A : ℚ⟦X⟧ := mk α
 
 /-
-  `A.shift = 2 * A + (1 - X)⁻¹`
+  `A/ₓ = 2 * A + (1 - X)⁻¹`
 -/
 theorem left_eq_right : A/ₓ = 2 • A + 1 / (1 - X) := by ext n; cases n <;> simp [two_eq_C]
 
@@ -29,7 +29,7 @@ theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
     simpa [mul_assoc, mul_comm X, ← two_eq_C, inverse_works]
 
 /- Rewrite A using partial fraction decomposition -/
-theorem A.pfd : X * (2 / (1 - 2 • X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * 1 / (1 - X) * 1 / (1 - 2 • X) := by
+theorem A.pfd : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
   calc (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X))
       = X * (2 / (1 - C' 2*X) * ((1 - C' 1 * X) * 1 / (1 - C' 1 * X)) - ((1 - C' 2 * X) * 1 / (1 - C' 2 *X)) * 1 / (1 - C' 1* X)) := by
         rw [invOneScaled_inv, invOneScaled_inv]
@@ -38,11 +38,7 @@ theorem A.pfd : X * (2 / (1 - 2 • X) - 1 / (1 - X)) = (X : ℚ⟦X⟧) * 1 / (
     _ = X * 1 / (1 - X) * 1 / (1 - 2 • X) := by simp [two_eq_C]; ring
 
 /- Find the coefficients of the partial fraction decomposition version of A -/
-theorem A.pfd_eq : (X * (2 / (1 - 2 • X) - 1 / (1 - X)) : ℚ⟦X⟧) = mk (2 ^ · - 1) := by
+theorem A.pfd_eq : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = mk (2 ^ · - 1) := by
   ext n; cases n <;> simp [pow_succ, pow_mul_comm', two_eq_C]
 
-theorem coeff_alpha : α = (2 ^ · - 1) :=
-  suffices A = mk (2 ^ · - 1) by
-    ext
-    simpa only [coeff_mk] using PowerSeries.ext_iff.mp this _
-  by rw [←A.pfd_eq, A.pfd, ←A_eq]
+theorem coeff_alpha : α = (2 ^ · - 1) := ext_mk <| by rw [←A.pfd_eq, A.pfd, ←A_eq]

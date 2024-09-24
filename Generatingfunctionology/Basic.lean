@@ -126,7 +126,6 @@ section natCast
 
 variable {φ}
 
-@[simp]
 lemma natCast_eq_C {n : ℕ} : n • φ = C α n.cast * φ := by simp
 
 -- FIXME: Just the above being `simp` doesn't seem to work :/
@@ -136,3 +135,9 @@ lemma invOneScaled_cast_inv (n : ℕ) : (1 - n • X : α⟦X⟧) * 1 / (1 - n �
   simpa using invOneScaled_inv_left (n : α)
 
 end natCast
+
+/-- Two series are equal if their power series are equal -/
+-- TODO: @[ext] How do I control which ext lemma ext finds?
+theorem ext_mk {a b : ℕ → α} (h : mk a = mk b) : a = b := funext <| by
+  have := PowerSeries.ext_iff.mp h
+  simpa [coeff_mk]
