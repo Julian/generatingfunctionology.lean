@@ -20,13 +20,13 @@ theorem left_eq_right : A/ₓ = 2 • A + 1 / (1 - X) := by ext n; cases n <;> s
 theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
   have := sub_eq_of_eq_add' <| calc
     _ = (2 • A + 1 / (1 - X)) * X + C' (constantCoeff' A) := shift_inv left_eq_right |>.symm
-    _ = (C' 2 * A + invOneScaled 1) * X := by simp [two_eq_C]
+    _ = (C' 2 * A + invOneScaled 1) * X := by simp [extractInvOneScaled, two_eq_C]
     _ = X * C' 2 * A + X * invOneScaled 1 := by ring
   by
     rw [mul_comm, ← mul_one A, mul_assoc, ← mul_assoc 1, ← mul_sub_left_distrib, one_mul] at this
-    have := congrFun (congrArg HMul.hMul this) (invOneScaled 2)
-    have inverse_works : (1 - 2*X : ℚ⟦X⟧) * invOneScaled 2 = 1 := by simpa using invOneScaled_cast_inv 2 (α := ℚ)
-    simpa [mul_assoc, mul_comm X, ← two_eq_C, inverse_works]
+    have := congr($this * invOneScaled 2)
+    have inverse_works : (1 - 2*X : ℚ⟦X⟧) * invOneScaled 2 = 1 := by simpa [extractInvOneScaled] using invOneScaled_cast_inv 2 (α := ℚ)
+    simpa [mul_assoc, mul_comm X, extractInvOneScaled, ← two_eq_C, inverse_works]
 
 /- Rewrite A using partial fraction decomposition -/
 theorem A.pfd : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=

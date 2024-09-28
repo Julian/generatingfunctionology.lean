@@ -54,13 +54,7 @@ section invOneScaled
 abbrev invOneScaled (a : α) : PowerSeries α := mk (a ^ ·)
 
 abbrev extractInvOneScaled (x : α⟦X⟧) : α⟦X⟧ := invOneScaled <| -(coeff' 1 x)
-
 notation a "/ ( " x " ) " => a * extractInvOneScaled x
-
-@[simp]
-lemma extractInv_def (x : α⟦X⟧) : extractInvOneScaled x = invOneScaled (-(coeff' 1 x)) := rfl
-
-lemma extractInvOne : (1 / (1 - X) : α⟦X⟧) = invOneScaled 1 := by simp
 
 section mkOneSpellings
 
@@ -139,5 +133,4 @@ end natCast
 /-- Two series are equal if their power series are equal -/
 -- TODO: @[ext] How do I control which ext lemma ext finds?
 theorem ext_mk {a b : ℕ → α} (h : mk a = mk b) : a = b := funext <| by
-  have := PowerSeries.ext_iff.mp h
-  simpa [coeff_mk]
+  simpa using PowerSeries.ext_iff.mp h
