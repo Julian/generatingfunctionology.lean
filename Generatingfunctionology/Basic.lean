@@ -68,7 +68,6 @@ end mkOneSpellings
 /-
   The constant coefficient of `(1 - a*X)⁻¹` is 1
 -/
-@[simp]
 theorem constCoeff_invOneScaled (a : α) : constantCoeff' (1 / (1 - C' a * X)) = 1 := by simp
 
 /-
