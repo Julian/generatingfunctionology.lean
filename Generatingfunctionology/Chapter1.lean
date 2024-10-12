@@ -6,15 +6,15 @@ abbrev α : ℕ → ℚ
 | n + 1 => 2 * (α n) + 1
 | 0 => 0
 
--- A(x)
+/-- A(x) -/
 abbrev A : ℚ⟦X⟧ := mk α
 
-/-
+/--
   `A/ₓ = 2 * A + (1 - X)⁻¹`
 -/
 theorem left_eq_right : A/ₓ = 2 • A + 1 / (1 - X) := by ext n; cases n <;> simp [two_eq_C]
 
-/-
+/--
   `A = X * (1 - X)⁻¹ * (1 - 2 * X)⁻¹`
 -/
 theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
@@ -28,7 +28,7 @@ theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
     have inverse_works : (1 - 2*X : ℚ⟦X⟧) * invOneScaled 2 = 1 := by simpa [extractInvOneScaled] using invOneScaled_cast_inv 2 (α := ℚ)
     simpa [mul_assoc, mul_comm X, extractInvOneScaled, ← two_eq_C, inverse_works]
 
-/- Rewrite A using partial fraction decomposition -/
+/-- Rewrite A using partial fraction decomposition -/
 theorem A.pfd : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
   calc (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X))
       = X * (2 / (1 - C' 2*X) * ((1 - C' 1 * X) * 1 / (1 - C' 1 * X)) - ((1 - C' 2 * X) * 1 / (1 - C' 2 *X)) * 1 / (1 - C' 1* X)) := by
@@ -37,7 +37,7 @@ theorem A.pfd : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = X * 1 / (
     _ = X * 1 / (1 - C' 1 * X) * 1 / (1 - C' 2*X) * (2 * 1 - 2 * C' 1 * X - 1 + C' 2 * X) := by ring
     _ = X * 1 / (1 - X) * 1 / (1 - 2 • X) := by simp [two_eq_C]; ring
 
-/- Find the coefficients of the partial fraction decomposition version of A -/
+/-- Find the coefficients of the partial fraction decomposition version of A -/
 theorem A.pfd_eq : (X : ℚ⟦X⟧) * (2 / (1 - 2 • X) - 1 / (1 - X)) = mk (2 ^ · - 1) := by
   ext n; cases n <;> simp [pow_succ, pow_mul_comm', two_eq_C]
 

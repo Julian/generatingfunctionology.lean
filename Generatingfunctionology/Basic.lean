@@ -14,28 +14,33 @@ abbrev coeff' := coeff α
 abbrev C' := C α
 abbrev constantCoeff' := constantCoeff α
 
-/-
-  Given `p = a_0 + a_1 * X + a_2 * X^2 + ...`,
-  `p.shift = a_1 + a_2 * X + a_3 * X^2 + ...`
+/--
+  Given:
+
+    `φ = a₀ + a₁ * X + a₂ * X^2 + ⋯`,
+
+  we define:
+
+    `φ.shift = a₁ + a₂ * X + a₃ * X^2 + ⋯`,
+
+  i.e. it is the series obtained by "dividing" all terms by X,
+  which we now will denote `φ/ₓ` via Lean notation.
 -/
 abbrev shift : PowerSeries α := mk fun n ↦ coeff' (n + 1) φ
 
 notation φ " /ₓ " => shift φ
 
-/-
-  If `p = a_0 + a_1 * X + a_2 * X^2 + ...`, then
-  `p.shift * X + a_0 = p`
+/--
+
+  If `φ = a₀ + a₁ * X + a₂ * X^2 + ⋯` then
+     `φ/ₓ * X + a₀ = φ`.
 -/
 lemma shift_mul_X_add : φ/ₓ * X + (C' (constantCoeff' φ)) = φ := by
   ext n; cases n <;> simp
 
 variable {φ φ'}
 
-/-
-  Given `φ = a_0 + a_1 * X + a_2 * X^2 + ...`,
-  if `φ.shift = φ'`, then
-  `φ = φ' * X + a_0`
--/
+/-- Given `φ = a₀ + a₁ * X + a₂ * X^2 + ⋯`, if `φ' = φ/ₓ` then `φ' * X + a₀ = φ`. -/
 lemma shift_inv (h: φ/ₓ = φ') : φ' * X + (C' (constantCoeff' φ)) = φ := by rw [←h, shift_mul_X_add]
 
 end PowerSeries
@@ -47,7 +52,7 @@ variable [Ring α]
 
 section invOneScaled
 
-/-
+/--
   The power series for `(1 - a*X)⁻¹`.
   (It's equal to `1 + a * X + a^2 * X^2 + ...`)
 -/
@@ -65,27 +70,21 @@ lemma eq_invUnitsSubOne : invOneScaled 1 = (invUnitsSub 1 : α⟦X⟧) := by
 
 end mkOneSpellings
 
-/-
-  The constant coefficient of `(1 - a*X)⁻¹` is 1
--/
+/-- The constant coefficient of `(1 - a*X)⁻¹` is 1. -/
 theorem constCoeff_invOneScaled (a : α) : constantCoeff' (1 / (1 - C' a * X)) = 1 := by simp
 
-/-
-  `(1 - a*X)⁻¹ * a*X = a*X + a^2*X^2 + a^3*X^3 + ...`
--/
+/-- `(1 - a*X)⁻¹ * a*X = a*X + a^2*X^2 + a^3*X^3 + ...` -/
 theorem mul_invOneScaled_scale_shifts (a : α) : 1 / (1 - C' a * X) * (C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
   ext n; cases n <;> simp [← mul_assoc, pow_succ]
 
-/-
+/--
   `a*X * (1 - a*X)⁻¹ = a*X + a^2*X^2 + a^3*X^3 + ...`
   (Need both sides since not assuming that `R` is a commutative ring)
 -/
 theorem mul_invOneScaled_scale_shifts' (a : α) : (C' a * X) * 1 / (1 - C' a * X) = mk fun n => if n = 0 then 0 else a^n := by
   ext n; cases n <;> simp [mul_assoc, pow_succ, pow_mul_comm']
 
-/-
-  `(1 - a*X) * (1 - a*X)⁻¹ = 1`
--/
+/-- `(1 - a*X) * (1 - a*X)⁻¹ = 1` -/
 theorem invOneScaled_inv (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
   ext n
   cases n
@@ -93,9 +92,7 @@ theorem invOneScaled_inv (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := b
   · rw [sub_mul, mul_invOneScaled_scale_shifts']
     simp
 
-/-
-  `(1 - a*X) * (1 - a*X)⁻¹ = 1`
--/
+/-- `(1 - a*X) * (1 - a*X)⁻¹ = 1` -/
 theorem invOneScaled_inv_left (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1 := by
   ext n
   cases n
@@ -103,9 +100,7 @@ theorem invOneScaled_inv_left (a : α) : (1 - C' a * X) * 1 / (1 - C' a * X) = 1
   · rw [mul_sub_right_distrib, mul_invOneScaled_scale_shifts']
     simp
 
-/-
-  `(1 - a*X)⁻¹ * (1 - a*X) = 1`
--/
+/-- `(1 - a*X)⁻¹ * (1 - a*X) = 1` -/
 theorem invOneScaled_inv_right (a : α) : 1 / (1 - C' a * X) * (1 - C' a * X) = 1 := by
   ext n
   cases n
