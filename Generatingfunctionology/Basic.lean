@@ -41,7 +41,7 @@ lemma shift_mul_X_add : φ/ₓ * X + (C' (constantCoeff' φ)) = φ := by
 variable {φ φ'}
 
 /-- Given `φ = a₀ + a₁ * X + a₂ * X^2 + ⋯`, if `φ' = φ/ₓ` then `φ' * X + a₀ = φ`. -/
-lemma shift_inv (h: φ/ₓ = φ') : φ' * X + (C' (constantCoeff' φ)) = φ := by rw [←h, shift_mul_X_add]
+lemma shift_inv (h: φ/ₓ = φ') : φ = φ' * X + (C' (constantCoeff' φ)) := by rw [←h, shift_mul_X_add]
 
 end PowerSeries
 

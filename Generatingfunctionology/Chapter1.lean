@@ -19,7 +19,7 @@ theorem left_eq_right : A/ₓ = 2 • A + 1 / (1 - X) := by ext n; cases n <;> s
 -/
 theorem A_eq : A = X * 1 / (1 - X) * 1 / (1 - 2 • X) :=
   have := sub_eq_of_eq_add' <| calc
-    _ = (2 • A + 1 / (1 - X)) * X + C' (constantCoeff' A) := shift_inv left_eq_right |>.symm
+    _ = (2 • A + 1 / (1 - X)) * X + C' (constantCoeff' A) := shift_inv left_eq_right
     _ = (C' 2 * A + invOneScaled 1) * X := by simp [extractInvOneScaled, two_eq_C]
     _ = X * C' 2 * A + X * invOneScaled 1 := by ring
   by
