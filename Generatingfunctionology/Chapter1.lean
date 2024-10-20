@@ -57,13 +57,13 @@ abbrev α : ℕ → ℚ
 abbrev A : ℚ⟦X⟧ := mk α
 
 /--
-  `(A - 1)/ₓ = 2 * A + X * d⁄dX (1 - X)⁻¹`
+  `(A - 1)/ₓ = 2 • A + X * d⁄dX (1 - X)⁻¹`
 -/
 theorem left_eq_right : (A - 1)/ₓ = 2 • A + X * (1 / (1 - X)) ^ 2 := by
   calc (A - 1)/ₓ
     _ = (A - C' (constantCoeff' A))/ₓ := rfl
-    _ = mk fun n ↦ 2 * (α n) + n := by rw [shift_sub_const, mk_shift_eq_mk_add]
-    _ = (mk fun n ↦ 2 * (α n)) + (mk (·) : ℚ⟦X⟧) := rfl
+    _ = mk fun n ↦ 2 • (α n) + n := by simp_rw [shift_sub_const, mk_shift_eq_mk_add, nsmul_eq_mul, Nat.cast_ofNat]
+    _ = (mk fun n ↦ 2 • (α n)) + (mk (·) : ℚ⟦X⟧) := rfl
     _ = 2 • A + (mk (·) : ℚ⟦X⟧) := by ext n; cases n <;> simp [two_eq_C]  -- GENERALIZEME...
     _ = 2 • A + X * d⁄dX ℚ (mk 1) := by rw [X_mul_deriv_mk_one]
     _ = 2 • A + X * (1 / (1 - X)) ^ 2 := by rw [←invOneScaled_deriv, ←eq_mkOne, extractInvOne]
