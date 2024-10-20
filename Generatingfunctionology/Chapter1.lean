@@ -1,5 +1,6 @@
 import Generatingfunctionology.Basic
 
+open scoped DivNotation
 open PowerSeries
 
 namespace «1.2»
@@ -55,6 +56,7 @@ abbrev α : ℕ → ℚ
 
 /-- A(x) -/
 abbrev A : ℚ⟦X⟧ := mk α
+
 
 /--
   `(A - 1)/ₓ = 2 • A + X * d⁄dX (1 - X)⁻¹`

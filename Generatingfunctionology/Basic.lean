@@ -72,7 +72,11 @@ section invOneScaled
 abbrev invOneScaled (a : α) : α⟦X⟧ := mk (a ^ ·)
 
 abbrev extractInvOneScaled (x : α⟦X⟧) : α⟦X⟧ := invOneScaled <| -(coeff' 1 x)
-notation a "/ ( " x " ) " => a * extractInvOneScaled x
+namespace DivNotation
+scoped notation a "/ ( " x " ) " => a * extractInvOneScaled x
+end DivNotation
+
+open DivNotation
 
 lemma extractInvOne : (1 / (1 - X) : α⟦X⟧) = invOneScaled 1 := by simp [extractInvOneScaled]
 
@@ -170,6 +174,7 @@ lemma natCast_eq_C {n : ℕ} : n • φ = C α n.cast * φ := by simp
 -- FIXME: Just the above being `simp` doesn't seem to work :/
 lemma two_eq_C : 2 * φ = C α 2 * φ := rfl
 
+open DivNotation in
 lemma invOneScaled_cast_inv (n : ℕ) : (1 - n • X : α⟦X⟧) * 1 / (1 - n • X) = 1 := by
   simpa using invOneScaled_inv_left (n : α)
 
